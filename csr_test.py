@@ -230,7 +230,7 @@ x = np.zeros(8)
 b = np.ones(8)
 y = np.zeros(8)
 lis_wrapper.lis(AAcsr_full.data, AAcsr_full.indices, AAcsr_full.indptr, x, b, 1, 1e-4, 10000)
-# make dense matrix AA 'full'
+# convert lower trianguar matrix AA to 'full' matrix
 y = (AA + AA.T - np.eye(AA.shape[0]) * AA.diagonal()).dot(x)
 print y
 
