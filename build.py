@@ -99,9 +99,9 @@ class BuildExt(build_ext):
 setup(
     name='lis_wrapper',
     version=__version__,
-    author='Sylvain Corlay',
-    author_email='sylvain.corlay@gmail.com',
-    url='https://github.com/pybind/python_example',
+    author='',
+    author_email='',
+    url='',
     description='A test project using pybind11',
     long_description='',
     ext_modules=ext_modules,
