@@ -1,4 +1,4 @@
-LIS-Solver as python extension
+LIS-Solver Python extension
 ==============================
 
 Pybind11 https://github.com/pybind/pybind11 is a lightweight header-only library
