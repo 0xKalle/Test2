@@ -77,9 +77,8 @@ b = np.ones(8)
 info = 1    # make LIS a littel bit more verbose
 rel_tol = 1e-4  # relative Tolerance 
 max_iter = 10000 # maximum number of iterations
-
-lis_wrapper.lis(Acsr_full.data, Acsr_full.indices, Acsr_full.indptr, x, b, info,
-                rel_tol, max_iter)
+lis_cmd = "-i cg -tol %e -maxiter %d -p ssor -ssor_w 1.0 -initx_zeros 0 -print mem" % (rel_tol, max_iter)
+lis_wrapper.lis(Acsr_full.data, Acsr_full.indices, Acsr_full.indptr, x, b, info, lis_cmd, "residuals.log")
 # check solution x with orginal dense matrix A first
 # convert upper trianguar matrix AA to 'full' matrix
 y = (A + A.T - np.eye(A.shape[0]) * A.diagonal()).dot(x)

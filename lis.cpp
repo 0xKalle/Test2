@@ -7,57 +7,58 @@
 #include <stdio.h>
 #include "lis_config.h"
 #include "lis.h"
-#pragma GCC diagnostic ignored "-Wwrite-strings"
+//#pragma GCC diagnostic ignored "-Wwrite-strings"
 
 namespace py = pybind11;
 using namespace std;
 
 void wrapper(py::array_t<double> values, py::array_t<int> columns,
-             py::array_t<int> index, py::array_t<double> x,
-             py::array_t<double> b, int info, double rel_tol, int max_iter){
+        py::array_t<int> index, py::array_t<double> x,
+        py::array_t<double> b, int info, string lis_cmd, string logfname) {
 
     py::buffer_info info_values = values.request();
-    auto ptr_values = static_cast<double *>(info_values.ptr);
+    auto ptr_values = static_cast<double *> (info_values.ptr);
     py::buffer_info info_columns = columns.request();
-    auto ptr_columns = static_cast<int *>(info_columns.ptr);
+    auto ptr_columns = static_cast<int *> (info_columns.ptr);
     py::buffer_info info_index = index.request();
-    auto ptr_index = static_cast<int *>(info_index.ptr);
+    auto ptr_index = static_cast<int *> (info_index.ptr);
     py::buffer_info info_x = x.request();
-    auto ptr_x = static_cast<double *>(info_x.ptr);
+    auto ptr_x = static_cast<double *> (info_x.ptr);
     py::buffer_info info_b = b.request();
-    auto ptr_b = static_cast<double *>(info_b.ptr);
+    auto ptr_b = static_cast<double *> (info_b.ptr);
 
     cout << "wrapper: info_values.shape[0] " << info_values.shape[0] << endl;
     cout << "wrapper: info_x.shape[0] " << info_x.shape[0] << endl;
 
     c_lis(ptr_values, info_values.shape[0],
-          ptr_columns, ptr_index, ptr_x, info_x.shape[0],
-          ptr_b, info, rel_tol, max_iter);
+            ptr_columns, ptr_index, ptr_x, info_x.shape[0],
+            ptr_b, info, lis_cmd.c_str(), logfname.c_str());
 }
 
 void c_lis(double* val, int nnz, int* col, int* ind, double* x_arr, int len_xarr,
-        double* b, int info, double rel_tol, int max_iter) {
+        double* b, int info, const char* lis_cmd, const char* logfname) {
 
     LIS_MATRIX A;
     LIS_VECTOR X, B;
     LIS_SOLVER solver;
-    char *dargvs[] = {"dummy"};
-    char **dargv;
-    LIS_INT err, i, dargc = 1;
+    char dummy[80];
+    snprintf(dummy, 80, "dummy");
+    char** dargv;
+    LIS_INT err, i, dargc = 2;
     LIS_INT iter, iter_double, iter_quad, nsol, nprecon;
     double times, itimes, ptimes, p_c_times, p_i_times;
     LIS_REAL resid;
     char solvername[128], preconname[128];
-    char tolstr[80];
-    char iterstr[80];
+    char cmd[200];
+    char logf[80];
 
     printf("LIS start...\n");
-    //printf("lis_command: %s\n", lis_command);
     LIS_DEBUG_FUNC_IN;
-    //create and associate the coefficient matrix in CSR format
-    dargv = &dargvs[0];
+    dargv[0] = dummy;
+    // lis_initialize seems to need at least one argument and argcount=1
     err = lis_initialize(&dargc, &dargv);
     CHKERR(err);
+    //create and associate the coefficient matrix in CSR forma
     err = lis_matrix_create(0, &A);
     CHKERR(err);
     err = lis_matrix_set_size(A, 0, len_xarr);
@@ -92,7 +93,6 @@ void c_lis(double* val, int nnz, int* col, int* ind, double* x_arr, int len_xarr
     for (i = 0; i < len_xarr; i++) {
         lis_vector_set_value(LIS_INS_VALUE, i, *(x_arr + i), X);
     }
-
     // setup rhs
     for (i = 0; i < len_xarr; i++) {
         lis_vector_set_value(LIS_INS_VALUE, i, *(b + i), B);
@@ -100,21 +100,9 @@ void c_lis(double* val, int nnz, int* col, int* ind, double* x_arr, int len_xarr
     // solver
     err = lis_solver_create(&solver);
     CHKERR(err);
-    lis_solver_set_option("-i cg", solver);
-    snprintf(tolstr, 80, "-tol %e", rel_tol);
-    lis_solver_set_option(tolstr, solver);
-    snprintf(iterstr, 80, "-maxiter %d", max_iter);
-    lis_solver_set_option(iterstr, solver);
-    //lis_solver_set_option("-p jacobi", solver);
-    //lis_solver_set_option("-p ilu -ilu_fill 2", solver);
-
-    lis_solver_set_option("-p ssor", solver);
-    //lis_solver_set_option("-adds true", solver);
-    lis_solver_set_option("-ssor_w 1.0", solver);
-    // dont't set initial vector x to 0
-    lis_solver_set_option("-initx_zeros 0", solver);
-
-    lis_solver_set_option("-print mem", solver);
+    //pass command string to LIS
+    snprintf(cmd, 200, lis_cmd);
+    lis_solver_set_option(cmd, solver);
     err = lis_solve(A, B, X, solver);
     CHKERR(err);
     lis_solver_get_iterex(solver, &iter, &iter_double, &iter_quad);
@@ -133,6 +121,7 @@ void c_lis(double* val, int nnz, int* col, int* ind, double* x_arr, int len_xarr
             solvername, iter, iter_double, iter_quad);
 #endif
     if (info) {
+        printf("LIS command string: %s\n", cmd);
         lis_solver_get_timeex(solver, &times, &itimes, &ptimes, &p_c_times, &p_i_times);
         printf("%s: elapsed time             = %e sec.\n", solvername, times);
         printf("%s:   preconditioner         = %e sec.\n", preconname, ptimes);
@@ -149,7 +138,8 @@ void c_lis(double* val, int nnz, int* col, int* ind, double* x_arr, int len_xarr
         lis_vector_get_value(X, i, (x_arr + i));
     }
     // write residual infos
-    lis_solver_output_rhistory(solver, "residual.log");
+    snprintf(logf, 80, logfname);
+    lis_solver_output_rhistory(solver, logf);
     // clean up
     lis_vector_destroy(X);
     lis_vector_destroy(B);

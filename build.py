@@ -1,8 +1,9 @@
-from setuptools import setup, Extension
+from os.path import expanduser
+import setuptools
+from setuptools import Extension
+from setuptools import setup
 from setuptools.command.build_ext import build_ext
 import sys
-import setuptools
-from os.path import expanduser
 home = expanduser("~")
 
 
@@ -25,21 +26,21 @@ class get_pybind_include(object):
 
 ext_modules = [
     Extension(
-        'lis_wrapper',
-        ['lis.cpp'],
-        include_dirs=[
-            # Path to pybind11 headers
-            #get_pybind_include(),
-            #get_pybind_include(user=True),
-            home+'/Downloads/pybind11/include',
-            '/usr/local/lis/include'
-        ],
-        extra_compile_args=["-fopenmp"],
-        extra_link_args=["-fopenmp"],
-        library_dirs = ['/usr/local/lis/lib'],
-        libraries =['lis'],
-        language='c++'
-    ),
+              'lis_wrapper',
+              ['lis.cpp'],
+              include_dirs=[
+              # Path to pybind11 headers
+              #get_pybind_include(),
+              #get_pybind_include(user=True),
+              home + '/Downloads/pybind11/include',
+              '/usr/local/lis/include'
+              ],
+              extra_compile_args=["-fopenmp"],
+              extra_link_args=["-fopenmp"],
+              library_dirs=['/usr/local/lis/lib'],
+              libraries=['lis'],
+              language='c++'
+              )
 ]
 
 
@@ -93,19 +94,19 @@ class BuildExt(build_ext):
         elif ct == 'msvc':
             opts.append('/DVERSION_INFO=\\"%s\\"' % self.distribution.get_version())
         for ext in self.extensions:
-            ext.extra_compile_args = opts
+            ext.extra_compile_args += opts
         build_ext.build_extensions(self)
 
 setup(
-    name='lis_wrapper',
-    version=__version__,
-    author='',
-    author_email='',
-    url='',
-    description='A test project using pybind11',
-    long_description='',
-    ext_modules=ext_modules,
-    install_requires=['pybind11>=1.7'],
-    cmdclass={'build_ext': BuildExt},
-    zip_safe=False,
-)
+      name='lis_wrapper',
+      version=__version__,
+      author='',
+      author_email='',
+      url='',
+      description='A test project using pybind11',
+      long_description='',
+      ext_modules=ext_modules,
+      install_requires=['pybind11>=1.7'],
+      cmdclass={'build_ext': BuildExt},
+      zip_safe=False,
+      )
