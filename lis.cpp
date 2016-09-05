@@ -44,7 +44,7 @@ void c_lis(double* val, int nnz, int* col, int* ind, double* x_arr, int len_xarr
     char dummy[80];
     snprintf(dummy, 80, "dummy");
     char** dargv;
-    LIS_INT err, i, dargc = 2;
+    LIS_INT err, i, dargc = 1;
     LIS_INT iter, iter_double, iter_quad, nsol, nprecon;
     double times, itimes, ptimes, p_c_times, p_i_times;
     LIS_REAL resid;
@@ -55,10 +55,10 @@ void c_lis(double* val, int nnz, int* col, int* ind, double* x_arr, int len_xarr
     printf("LIS start...\n");
     LIS_DEBUG_FUNC_IN;
     dargv[0] = dummy;
-    // lis_initialize seems to need at least one argument and argcount=1
+    // lis_initialize seems to need at least one argument and argc=1
     err = lis_initialize(&dargc, &dargv);
     CHKERR(err);
-    //create and associate the coefficient matrix in CSR forma
+    //create and associate the coefficient matrix in CSR format
     err = lis_matrix_create(0, &A);
     CHKERR(err);
     err = lis_matrix_set_size(A, 0, len_xarr);
@@ -133,7 +133,7 @@ void c_lis(double* val, int nnz, int* col, int* ind, double* x_arr, int len_xarr
 #else
     printf("%s: relative residual 2-norm = %e\n\n", solvername, resid);
 #endif
-    //copy solution vector back to python
+    //copy solution vector back to Python
     for (i = 0; i < len_xarr; i++) {
         lis_vector_get_value(X, i, (x_arr + i));
     }

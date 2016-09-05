@@ -11,4 +11,8 @@ clean:
 
 install:
 	python2.7 build.py install --user
+	
+test:
+	python2.7 csr_test.py
+
 

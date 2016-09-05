@@ -1,12 +1,12 @@
-# Import pybind11 generated wrapper for our LIS-Solver routine which is implemented
+# Import pybind11 generated wrapper for LIS-Solver routine which is implemented
 # in lis.cpp
 import lis_wrapper
 import numpy as np
 import scipy.sparse
 
 # Define a symmetric 8 x 8 dense upper triangular matrix first. 
-# This matrix is part of the examples which come whith Intels MKL library
-# and is used here for historical resasons.
+# This matrix is part of the examples which come with Intel's MKL library
+# and is used here for historical reasons.
 
 # A:
 #     7.0,       1.0,           2.0, 7.0,
@@ -47,7 +47,7 @@ A[7, 7] = 5.0
 
 # print "Dense matrix:"
 print A
-# dense matrix to sparse matrix in CSR format
+# Dense matrix to sparse matrix in CSR format
 Acsr = scipy.sparse.csr_matrix(A)
 
 print "Sparse upper triangular CSR matrix:"
@@ -60,7 +60,7 @@ print "pointer: ", Acsr.indptr
 # "Note that both the upper and lower triangular entries need to be stored
 # irrespective of whether the matrix is symmetric or not."
 
-# Convert the upper triangular csr matrix Acsr to 'full' csr matrix Acsr_full
+# Convert the upper triangular CSR matrix Acsr to 'full' CSR matrix Acsr_full
 Acsr_full = Acsr + Acsr.T - scipy.sparse.diags(Acsr.diagonal())
 
 print
@@ -74,13 +74,26 @@ print "pointer: ", Acsr_full.indptr
 x = np.zeros(8)
 # right hand side
 b = np.ones(8)
-info = 1    # make LIS a littel bit more verbose
-rel_tol = 1e-4  # relative Tolerance 
+info = 1    # make LIS more verbose
+tol = 1e-4  # convergence tolerance
 max_iter = 10000 # maximum number of iterations
-lis_cmd = "-i cg -tol %e -maxiter %d -p ssor -ssor_w 1.0 -initx_zeros 0 -print mem" % (rel_tol, max_iter)
-lis_wrapper.lis(Acsr_full.data, Acsr_full.indices, Acsr_full.indptr, x, b, info, lis_cmd, "residuals.log")
-# check solution x with orginal dense matrix A first
-# convert upper trianguar matrix AA to 'full' matrix
+logfname = "residuals.log" # log
+
+# in lis_cmd following parameters are set:
+# -i cg : conjugate gradient solver
+# -p ssor : SSOR preconditioner
+# -tol  : convergence tolerance
+# -maxiter : maximum number of iterations
+# -p ssor : SSOR preconditioner
+# -ssor_w 1.0 : relaxation coefficient w (0 < w < 2)
+# -initx_zeros 0 : don't set initial values for x to 0. The initial guess is passed by x to LIS
+# -print mem : Save the residual history to logfile
+
+lis_cmd = "-i cg -tol %e -maxiter %d -p ssor -ssor_w 1.0 -initx_zeros 0 -print mem" % (tol, max_iter)
+lis_wrapper.lis(Acsr_full.data, Acsr_full.indices, Acsr_full.indptr, x, b, info, lis_cmd, logfname)
+
+# check solution x with original dense matrix A first
+# convert upper triangular matrix AA to 'full' matrix
 y = (A + A.T - np.eye(A.shape[0]) * A.diagonal()).dot(x)
 assert (np.allclose(b, y))
 
