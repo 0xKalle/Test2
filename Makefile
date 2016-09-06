@@ -3,6 +3,7 @@ all:
 
 clean:
 	rm -f *.so
+	rm -f *.pyc
 	rm -rf build
 	rm -rf tmp
 	rm -rf dist

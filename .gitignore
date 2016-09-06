@@ -129,3 +129,7 @@ ENV/
 
 /nbproject/
 /tmp/
+/.cproject
+/.project
+/.pydevproject
+/.settings/

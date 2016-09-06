@@ -5,6 +5,7 @@
 
 #include <iostream>
 #include <stdio.h>
+#include <string>
 #include "lis_config.h"
 #include "lis.h"
 //#pragma GCC diagnostic ignored "-Wwrite-strings"
@@ -14,7 +15,7 @@ using namespace std;
 
 void wrapper(py::array_t<double> values, py::array_t<int> columns,
         py::array_t<int> index, py::array_t<double> x,
-        py::array_t<double> b, int info, string lis_cmd, string logfname) {
+        py::array_t<double> b, int info, std::string lis_cmd, std::string fname) {
 
     py::buffer_info info_values = values.request();
     auto ptr_values = static_cast<double *> (info_values.ptr);
@@ -27,24 +28,19 @@ void wrapper(py::array_t<double> values, py::array_t<int> columns,
     py::buffer_info info_b = b.request();
     auto ptr_b = static_cast<double *> (info_b.ptr);
 
-    cout << "wrapper: info_values.shape[0] " << info_values.shape[0] << endl;
-    cout << "wrapper: info_x.shape[0] " << info_x.shape[0] << endl;
-
     c_lis(ptr_values, info_values.shape[0],
             ptr_columns, ptr_index, ptr_x, info_x.shape[0],
-            ptr_b, info, lis_cmd.c_str(), logfname.c_str());
+            ptr_b, info, lis_cmd.c_str(), fname.c_str());
 }
 
 void c_lis(double* val, int nnz, int* col, int* ind, double* x_arr, int len_xarr,
-        double* b, int info, const char* lis_cmd, const char* logfname) {
+        double* b, int info, const char *lis_cmd, const char *lis_logfname) {
 
     LIS_MATRIX A;
     LIS_VECTOR X, B;
     LIS_SOLVER solver;
-    char dummy[80];
-    snprintf(dummy, 80, "dummy");
-    char** dargv;
-    LIS_INT err, i, dargc = 1;
+    char **argv = NULL;
+    LIS_INT err, i, argc = 0;
     LIS_INT iter, iter_double, iter_quad, nsol, nprecon;
     double times, itimes, ptimes, p_c_times, p_i_times;
     LIS_REAL resid;
@@ -54,9 +50,7 @@ void c_lis(double* val, int nnz, int* col, int* ind, double* x_arr, int len_xarr
 
     printf("LIS start...\n");
     LIS_DEBUG_FUNC_IN;
-    dargv[0] = dummy;
-    // lis_initialize seems to need at least one argument and argc=1
-    err = lis_initialize(&dargc, &dargv);
+    err = lis_initialize(&argc, &argv);
     CHKERR(err);
     //create and associate the coefficient matrix in CSR format
     err = lis_matrix_create(0, &A);
@@ -100,9 +94,10 @@ void c_lis(double* val, int nnz, int* col, int* ind, double* x_arr, int len_xarr
     // solver
     err = lis_solver_create(&solver);
     CHKERR(err);
+    strncpy(cmd, lis_cmd, 200);
     //pass command string to LIS
-    snprintf(cmd, 200, lis_cmd);
-    lis_solver_set_option(cmd, solver);
+    err = lis_solver_set_option(cmd, solver);
+    CHKERR(err);
     err = lis_solve(A, B, X, solver);
     CHKERR(err);
     lis_solver_get_iterex(solver, &iter, &iter_double, &iter_quad);
@@ -121,7 +116,8 @@ void c_lis(double* val, int nnz, int* col, int* ind, double* x_arr, int len_xarr
             solvername, iter, iter_double, iter_quad);
 #endif
     if (info) {
-        printf("LIS command string: %s\n", cmd);
+        printf("LIS command string: %s\n", lis_cmd);
+        printf("Logfile: %s\n", lis_logfname);
         lis_solver_get_timeex(solver, &times, &itimes, &ptimes, &p_c_times, &p_i_times);
         printf("%s: elapsed time             = %e sec.\n", solvername, times);
         printf("%s:   preconditioner         = %e sec.\n", preconname, ptimes);
@@ -137,8 +133,8 @@ void c_lis(double* val, int nnz, int* col, int* ind, double* x_arr, int len_xarr
     for (i = 0; i < len_xarr; i++) {
         lis_vector_get_value(X, i, (x_arr + i));
     }
-    // write residual infos
-    snprintf(logf, 80, logfname);
+    strncpy(logf, lis_logfname, 80);
+    // write residuals to logfile
     lis_solver_output_rhistory(solver, logf);
     // clean up
     lis_vector_destroy(X);
@@ -149,7 +145,7 @@ void c_lis(double* val, int nnz, int* col, int* ind, double* x_arr, int len_xarr
     lis_finalize();
     LIS_DEBUG_FUNC_OUT;
     printf("LIS terminated...\n");
-    return;
+    //return;
 }
 
 PYBIND11_PLUGIN(lis_wrapper) {
@@ -157,4 +153,3 @@ PYBIND11_PLUGIN(lis_wrapper) {
     m.def("lis", &wrapper, "Call LIS wrapper");
     return m.ptr();
 }
-
