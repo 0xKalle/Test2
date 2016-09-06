@@ -1,11 +1,10 @@
 #include <pybind11/pybind11.h>
 #include <pybind11/numpy.h>
 
-#include "wrapper.h"
-
 #include <iostream>
 #include <stdio.h>
 #include <string>
+
 #include "lis_config.h"
 #include "lis.h"
 //#pragma GCC diagnostic ignored "-Wwrite-strings"
@@ -17,6 +16,17 @@ void wrapper(py::array_t<double> values, py::array_t<int> columns,
         py::array_t<int> index, py::array_t<double> x,
         py::array_t<double> b, int info, std::string lis_cmd, std::string fname) {
 
+    LIS_MATRIX A;
+    LIS_VECTOR X, B;
+    LIS_SOLVER solver;
+    char **argv = NULL;
+    LIS_INT err, argc = 0;
+    LIS_INT iter, iter_double, iter_quad, nsol, nprecon;
+    double times, itimes, ptimes, p_c_times, p_i_times;
+    LIS_REAL resid;
+    char solvername[128], preconname[128];
+    char cmd[200];
+    char logf[80];
     py::buffer_info info_values = values.request();
     auto ptr_values = static_cast<double *> (info_values.ptr);
     py::buffer_info info_columns = columns.request();
@@ -28,26 +38,6 @@ void wrapper(py::array_t<double> values, py::array_t<int> columns,
     py::buffer_info info_b = b.request();
     auto ptr_b = static_cast<double *> (info_b.ptr);
 
-    c_lis(ptr_values, info_values.shape[0],
-            ptr_columns, ptr_index, ptr_x, info_x.shape[0],
-            ptr_b, info, lis_cmd.c_str(), fname.c_str());
-}
-
-void c_lis(double* val, int nnz, int* col, int* ind, double* x_arr, int len_xarr,
-        double* b, int info, const char *lis_cmd, const char *lis_logfname) {
-
-    LIS_MATRIX A;
-    LIS_VECTOR X, B;
-    LIS_SOLVER solver;
-    char **argv = NULL;
-    LIS_INT err, i, argc = 0;
-    LIS_INT iter, iter_double, iter_quad, nsol, nprecon;
-    double times, itimes, ptimes, p_c_times, p_i_times;
-    LIS_REAL resid;
-    char solvername[128], preconname[128];
-    char cmd[200];
-    char logf[80];
-
     printf("LIS start...\n");
     LIS_DEBUG_FUNC_IN;
     err = lis_initialize(&argc, &argv);
@@ -55,9 +45,9 @@ void c_lis(double* val, int nnz, int* col, int* ind, double* x_arr, int len_xarr
     //create and associate the coefficient matrix in CSR format
     err = lis_matrix_create(0, &A);
     CHKERR(err);
-    err = lis_matrix_set_size(A, 0, len_xarr);
+    err = lis_matrix_set_size(A, 0, info_x.shape[0]);
     CHKERR(err);
-    err = lis_matrix_set_csr(nnz, ind, col, val, A);
+    err = lis_matrix_set_csr(info_values.shape[0], ptr_index, ptr_columns, ptr_values, A);
     CHKERR(err);
     err = lis_matrix_assemble(A);
     CHKERR(err);
@@ -66,9 +56,9 @@ void c_lis(double* val, int nnz, int* col, int* ind, double* x_arr, int len_xarr
     CHKERR(err);
     err = lis_vector_create(0, &X);
     CHKERR(err);
-    err = lis_vector_set_size(B, 0, len_xarr);
+    err = lis_vector_set_size(B, 0, info_x.shape[0]);
     CHKERR(err);
-    err = lis_vector_set_size(X, 0, len_xarr);
+    err = lis_vector_set_size(X, 0, info_x.shape[0]);
     CHKERR(err);
     printf("\nLIS: OpenMP Infos... \n");
 #ifdef _OPENMP
@@ -84,17 +74,17 @@ void c_lis(double* val, int nnz, int* col, int* ind, double* x_arr, int len_xarr
     //err = lis_vector_set_all(0.0, X);
     //CHKERR(err);
     // setup X
-    for (i = 0; i < len_xarr; i++) {
-        lis_vector_set_value(LIS_INS_VALUE, i, *(x_arr + i), X);
+    for (size_t i = 0; i < info_x.shape[0]; i++) {
+        lis_vector_set_value(LIS_INS_VALUE, i, *(ptr_x + i), X);
     }
     // setup rhs
-    for (i = 0; i < len_xarr; i++) {
-        lis_vector_set_value(LIS_INS_VALUE, i, *(b + i), B);
+    for (size_t i = 0; i < info_x.shape[0]; i++) {
+        lis_vector_set_value(LIS_INS_VALUE, i, *(ptr_b + i), B);
     }
-    // solver
+    // create solver
     err = lis_solver_create(&solver);
     CHKERR(err);
-    strncpy(cmd, lis_cmd, 200);
+    strncpy(cmd, lis_cmd.c_str(), 200);
     //pass command string to LIS
     err = lis_solver_set_option(cmd, solver);
     CHKERR(err);
@@ -115,9 +105,10 @@ void c_lis(double* val, int nnz, int* col, int* ind, double* x_arr, int len_xarr
     printf("%s: number of iterations     = %d (double = %d, quad = %d)\n",
             solvername, iter, iter_double, iter_quad);
 #endif
+    strncpy(logf, fname.c_str(), 80);
     if (info) {
-        printf("LIS command string: %s\n", lis_cmd);
-        printf("Logfile: %s\n", lis_logfname);
+        printf("LIS command string: %s\n", cmd);
+        printf("Logfile: %s\n", logf);
         lis_solver_get_timeex(solver, &times, &itimes, &ptimes, &p_c_times, &p_i_times);
         printf("%s: elapsed time             = %e sec.\n", solvername, times);
         printf("%s:   preconditioner         = %e sec.\n", preconname, ptimes);
@@ -130,10 +121,9 @@ void c_lis(double* val, int nnz, int* col, int* ind, double* x_arr, int len_xarr
     printf("%s: relative residual 2-norm = %e\n\n", solvername, resid);
 #endif
     //copy solution vector back to Python
-    for (i = 0; i < len_xarr; i++) {
-        lis_vector_get_value(X, i, (x_arr + i));
+    for (size_t i = 0; i < info_x.shape[0]; i++) {
+        lis_vector_get_value(X, i, (ptr_x + i));
     }
-    strncpy(logf, lis_logfname, 80);
     // write residuals to logfile
     lis_solver_output_rhistory(solver, logf);
     // clean up
@@ -145,7 +135,6 @@ void c_lis(double* val, int nnz, int* col, int* ind, double* x_arr, int len_xarr
     lis_finalize();
     LIS_DEBUG_FUNC_OUT;
     printf("LIS terminated...\n");
-    //return;
 }
 
 PYBIND11_PLUGIN(lis_wrapper) {

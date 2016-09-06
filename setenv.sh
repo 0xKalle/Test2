@@ -6,5 +6,5 @@ export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/lis/lib:/usr/local/$GCC/lib64
 export OMP_NUM_THREADS=4
 
 export PATH=/usr/local/$GCC/bin:$PATH
-export CC=/usr/local/$GCC/bin/g++
+export CC=/usr/local/$GCC/bin/gcc
 export CXX=/usr/local/$GCC/bin/g++
