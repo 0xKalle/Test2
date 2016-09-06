@@ -25,19 +25,26 @@ void wrapper(py::array_t<double> values, py::array_t<int> columns,
     double times, itimes, ptimes, p_c_times, p_i_times;
     LIS_REAL resid;
     char solvername[128], preconname[128];
-    char cmd[200];
-    char logf[80];
+    LIS_UNSIGNED_INT len_x;
+    
     py::buffer_info info_values = values.request();
-    auto ptr_values = static_cast<double *> (info_values.ptr);
+    auto ptr_values = static_cast<LIS_SCALAR *> (info_values.ptr);
     py::buffer_info info_columns = columns.request();
-    auto ptr_columns = static_cast<int *> (info_columns.ptr);
+    auto ptr_columns = static_cast<LIS_INT *> (info_columns.ptr);
     py::buffer_info info_index = index.request();
-    auto ptr_index = static_cast<int *> (info_index.ptr);
+    auto ptr_index = static_cast<LIS_INT *> (info_index.ptr);
     py::buffer_info info_x = x.request();
-    auto ptr_x = static_cast<double *> (info_x.ptr);
+    auto ptr_x = static_cast<LIS_SCALAR *> (info_x.ptr);
     py::buffer_info info_b = b.request();
-    auto ptr_b = static_cast<double *> (info_b.ptr);
-
+    auto ptr_b = static_cast<LIS_SCALAR *> (info_b.ptr);
+    // convert std::string to char*
+    char *cmd = new char[lis_cmd.length() + 1];
+    strcpy(cmd, lis_cmd.c_str());
+    char *logf = new char[fname.length() + 1];
+    strcpy(logf, fname.c_str());
+    // number of equations
+    len_x = info_x.shape[0];
+    
     printf("LIS start...\n");
     LIS_DEBUG_FUNC_IN;
     err = lis_initialize(&argc, &argv);
@@ -45,7 +52,7 @@ void wrapper(py::array_t<double> values, py::array_t<int> columns,
     //create and associate the coefficient matrix in CSR format
     err = lis_matrix_create(0, &A);
     CHKERR(err);
-    err = lis_matrix_set_size(A, 0, info_x.shape[0]);
+    err = lis_matrix_set_size(A, 0, len_x);
     CHKERR(err);
     err = lis_matrix_set_csr(info_values.shape[0], ptr_index, ptr_columns, ptr_values, A);
     CHKERR(err);
@@ -56,9 +63,9 @@ void wrapper(py::array_t<double> values, py::array_t<int> columns,
     CHKERR(err);
     err = lis_vector_create(0, &X);
     CHKERR(err);
-    err = lis_vector_set_size(B, 0, info_x.shape[0]);
+    err = lis_vector_set_size(B, 0, len_x);
     CHKERR(err);
-    err = lis_vector_set_size(X, 0, info_x.shape[0]);
+    err = lis_vector_set_size(X, 0, len_x);
     CHKERR(err);
     printf("\nLIS: OpenMP Infos... \n");
 #ifdef _OPENMP
@@ -74,17 +81,16 @@ void wrapper(py::array_t<double> values, py::array_t<int> columns,
     //err = lis_vector_set_all(0.0, X);
     //CHKERR(err);
     // setup X
-    for (size_t i = 0; i < info_x.shape[0]; i++) {
+    for (LIS_UNSIGNED_INT i = 0; i < len_x; i++) {
         lis_vector_set_value(LIS_INS_VALUE, i, *(ptr_x + i), X);
     }
     // setup rhs
-    for (size_t i = 0; i < info_x.shape[0]; i++) {
+    for (LIS_UNSIGNED_INT i = 0; i < len_x; i++) {
         lis_vector_set_value(LIS_INS_VALUE, i, *(ptr_b + i), B);
     }
     // create solver
     err = lis_solver_create(&solver);
     CHKERR(err);
-    strncpy(cmd, lis_cmd.c_str(), 200);
     //pass command string to LIS
     err = lis_solver_set_option(cmd, solver);
     CHKERR(err);
@@ -105,7 +111,6 @@ void wrapper(py::array_t<double> values, py::array_t<int> columns,
     printf("%s: number of iterations     = %d (double = %d, quad = %d)\n",
             solvername, iter, iter_double, iter_quad);
 #endif
-    strncpy(logf, fname.c_str(), 80);
     if (info) {
         printf("LIS command string: %s\n", cmd);
         printf("Logfile: %s\n", logf);
@@ -121,7 +126,7 @@ void wrapper(py::array_t<double> values, py::array_t<int> columns,
     printf("%s: relative residual 2-norm = %e\n\n", solvername, resid);
 #endif
     //copy solution vector back to Python
-    for (size_t i = 0; i < info_x.shape[0]; i++) {
+    for (LIS_UNSIGNED_INT i = 0; i < len_x; i++) {
         lis_vector_get_value(X, i, (ptr_x + i));
     }
     // write residuals to logfile
@@ -133,6 +138,8 @@ void wrapper(py::array_t<double> values, py::array_t<int> columns,
     lis_matrix_destroy(A);
     lis_solver_destroy(solver);
     lis_finalize();
+    delete[] cmd;
+    delete[] logf;
     LIS_DEBUG_FUNC_OUT;
     printf("LIS terminated...\n");
 }

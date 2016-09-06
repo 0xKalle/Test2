@@ -1,0 +1,15 @@
+--- ../lis-1.6.2/include/lis.h	2016-09-06 16:06:54.000000000 +0200
++++ /usr/local/lis/include/lis.h	2016-09-06 17:46:13.818395528 +0200
+@@ -336,7 +336,12 @@
+ #else
+ typedef double LIS_REAL;
+ #if defined(HAVE_COMPLEX_H)
++#ifdef __cplusplus
++#include <complex>
++typedef std::complex<double> LIS_COMPLEX;
++#else
+ typedef double complex LIS_COMPLEX;
++#endif
+ #else
+ #if defined(_Complex_I) && defined(complex) && defined(I)
+ typedef double _Complex LIS_COMPLEX;
