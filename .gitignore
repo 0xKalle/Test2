@@ -133,3 +133,4 @@ ENV/
 /.project
 /.pydevproject
 /.settings/
+/build-cmake/

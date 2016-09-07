@@ -25,7 +25,7 @@ void wrapper(py::array_t<double> values, py::array_t<int> columns,
     double times, itimes, ptimes, p_c_times, p_i_times;
     LIS_REAL resid;
     char solvername[128], preconname[128];
-    LIS_UNSIGNED_INT len_x;
+    LIS_INT len_x;
     
     py::buffer_info info_values = values.request();
     auto ptr_values = static_cast<LIS_SCALAR *> (info_values.ptr);
@@ -43,7 +43,7 @@ void wrapper(py::array_t<double> values, py::array_t<int> columns,
     char *logf = new char[fname.length() + 1];
     strcpy(logf, fname.c_str());
     // number of equations
-    len_x = info_x.shape[0];
+    len_x = (LIS_INT)info_x.shape[0];
     
     printf("LIS start...\n");
     LIS_DEBUG_FUNC_IN;
@@ -54,7 +54,7 @@ void wrapper(py::array_t<double> values, py::array_t<int> columns,
     CHKERR(err);
     err = lis_matrix_set_size(A, 0, len_x);
     CHKERR(err);
-    err = lis_matrix_set_csr(info_values.shape[0], ptr_index, ptr_columns, ptr_values, A);
+    err = lis_matrix_set_csr((LIS_INT)info_values.shape[0], ptr_index, ptr_columns, ptr_values, A);
     CHKERR(err);
     err = lis_matrix_assemble(A);
     CHKERR(err);
@@ -81,11 +81,11 @@ void wrapper(py::array_t<double> values, py::array_t<int> columns,
     //err = lis_vector_set_all(0.0, X);
     //CHKERR(err);
     // setup X
-    for (LIS_UNSIGNED_INT i = 0; i < len_x; i++) {
+    for (LIS_INT i = 0; i < len_x; i++) {
         lis_vector_set_value(LIS_INS_VALUE, i, *(ptr_x + i), X);
     }
     // setup rhs
-    for (LIS_UNSIGNED_INT i = 0; i < len_x; i++) {
+    for (LIS_INT i = 0; i < len_x; i++) {
         lis_vector_set_value(LIS_INS_VALUE, i, *(ptr_b + i), B);
     }
     // create solver
@@ -126,7 +126,7 @@ void wrapper(py::array_t<double> values, py::array_t<int> columns,
     printf("%s: relative residual 2-norm = %e\n\n", solvername, resid);
 #endif
     //copy solution vector back to Python
-    for (LIS_UNSIGNED_INT i = 0; i < len_x; i++) {
+    for (LIS_INT i = 0; i < len_x; i++) {
         lis_vector_get_value(X, i, (ptr_x + i));
     }
     // write residuals to logfile
