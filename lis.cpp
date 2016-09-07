@@ -26,7 +26,7 @@ void wrapper(py::array_t<double> values, py::array_t<int> columns,
     LIS_REAL resid;
     char solvername[128], preconname[128];
     LIS_INT len_x;
-    
+
     py::buffer_info info_values = values.request();
     auto ptr_values = static_cast<LIS_SCALAR *> (info_values.ptr);
     py::buffer_info info_columns = columns.request();
@@ -43,8 +43,8 @@ void wrapper(py::array_t<double> values, py::array_t<int> columns,
     char *logf = new char[fname.length() + 1];
     strcpy(logf, fname.c_str());
     // number of equations
-    len_x = (LIS_INT)info_x.shape[0];
-    
+    len_x = static_cast<LIS_INT> (info_x.shape[0]);
+
     printf("LIS start...\n");
     LIS_DEBUG_FUNC_IN;
     err = lis_initialize(&argc, &argv);
@@ -54,7 +54,8 @@ void wrapper(py::array_t<double> values, py::array_t<int> columns,
     CHKERR(err);
     err = lis_matrix_set_size(A, 0, len_x);
     CHKERR(err);
-    err = lis_matrix_set_csr((LIS_INT)info_values.shape[0], ptr_index, ptr_columns, ptr_values, A);
+    err = lis_matrix_set_csr(static_cast<LIS_INT> (info_values.shape[0]), ptr_index,
+            ptr_columns, ptr_values, A);
     CHKERR(err);
     err = lis_matrix_assemble(A);
     CHKERR(err);
