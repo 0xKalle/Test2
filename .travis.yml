@@ -1,0 +1,27 @@
+language: cpp
+compiler: gcc
+sudo: false
+addons:
+  apt: 
+   sources: 
+      - ubuntu-toolchain-r-test
+   packages:
+      - gcc-4.8 
+      - g++-4.8
+      - cmake
+  
+before_script:
+    - uname -a
+    - printenv
+    - g++ --version 2>&1 | grep g++
+    - gcc --version 2>&1 | grep g++
+    - cmake --version
+
+install: 
+    # Install gtest without sudo 
+    - mkdir ~/gtest && cd ~/gtest
+    - export LIBRARY_PATH=$(pwd)
+
+script:
+    - ls -al
+    - echo "Hello script"
