@@ -13,9 +13,11 @@ addons:
 before_script:
     - uname -a
     - printenv
+    - which gcc
     - g++ --version 2>&1 | grep g++
-    - gcc --version 2>&1 | grep g++
+    - gcc --version 2>&1 | grep gcc
     - cmake --version
+    - which gcc-4.8
 
 install: 
     # Install gtest without sudo 
