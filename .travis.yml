@@ -1,6 +1,7 @@
 language: cpp
 compiler: gcc
 sudo: false
+env: PYTHON=2.7 CPP=11 GCC=4.8
 addons:
   apt: 
    sources: 
@@ -14,10 +15,10 @@ before_script:
     - uname -a
     - printenv
     - which gcc
-    - g++ --version 2>&1 | grep g++
-    - gcc --version 2>&1 | grep gcc
+    - gcc-4.8 --version 2>&1 | grep gcc
     - cmake --version
     - which gcc-4.8
+    - g++-4.8 --version 2>&1 | grep g++
 
 install: 
     # Install gtest without sudo 
@@ -27,3 +28,5 @@ install:
 script:
     - ls -al
     - echo "Hello script"
+    - python --version
+    - pip install numpy scipy pytest
