@@ -26,9 +26,9 @@ install:
     - env | grep LD
 
 script:
+    - pwd
     - ls -alh
     - df -h
-    - free -h
-    - echo "Hello script"
+    - free
     - python --version
-    - pwd
+    
