@@ -29,4 +29,5 @@ script:
     - ls -al
     - echo "Hello script"
     - python --version
-    - pip install numpy scipy pytest
+    - pip install numpy scipy pytest --user
+    - ls -alh
