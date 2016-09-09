@@ -20,10 +20,16 @@ before_script:
     - which gcc-4.8
     - g++-4.8 --version 2>&1 | grep g++
 
+before_install:
+    - pip install --user --upgrade pip virtualenv
+    - virtualenv -p python2.7 venv
+    - source venv/bin/activate
+
 install: 
     # Install gtest without sudo 
     - export LIBRARY_PATH=$(pwd)
     - env | grep LD
+    - pip install numpy scipy pytest
 
 script:
     - pwd
@@ -31,4 +37,6 @@ script:
     - df -h
     - free
     - python --version
+    - python2.7 --version
+    - python2.7  -c "import numpy"
     
