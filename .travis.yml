@@ -1,6 +1,6 @@
 language: cpp
-compiler: gcc
-sudo: false
+sudo: required
+dist: trusty
 env: PYTHON=2.7 CPP=11 GCC=4.8
 addons:
   apt: 
