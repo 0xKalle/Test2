@@ -29,6 +29,5 @@ script:
     - ls -al
     - echo "Hello script"
     - python --version
-    - pip install -U pip --user
-    - pip install numpy pytest --user
+    - pwd
     - ls -alh
