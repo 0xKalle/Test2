@@ -22,12 +22,13 @@ before_script:
 
 install: 
     # Install gtest without sudo 
-    - mkdir ~/gtest && cd ~/gtest
     - export LIBRARY_PATH=$(pwd)
+    - env | grep LD
 
 script:
-    - ls -al
+    - ls -alh
+    - df -h
+    - free -h
     - echo "Hello script"
     - python --version
     - pwd
-    - ls -alh
