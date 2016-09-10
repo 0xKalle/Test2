@@ -12,9 +12,6 @@ dist: trusty
 #      - g++-4.8
 #      - cmake
 
-notifications:
-  email: true
-  
 before_script:
     - uname -a
     - printenv
@@ -29,6 +26,7 @@ before_install:
     - pip install --user --upgrade pip virtualenv
     - virtualenv -p python2.7 venv
     - source venv/bin/activate
+    - git clone https://github.com/pybind/pybind11.git
     - ./install-lis.sh
 
 install: 
@@ -45,5 +43,8 @@ script:
     - python --version
     - python2.7 --version
     - python2.7  -c "import numpy"
-    - ls -alhR /usr/local
+    - make clean
+    - make all
+    - make test
+
     
