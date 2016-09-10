@@ -24,6 +24,7 @@ before_install:
     - pip install --user --upgrade pip virtualenv
     - virtualenv -p python2.7 venv
     - source venv/bin/activate
+    - ./install-lis.sh
 
 install: 
     # Install gtest without sudo 
