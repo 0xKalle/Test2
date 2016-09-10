@@ -1,6 +1,6 @@
---- ../lis-1.6.2/include/lis.h	2016-09-06 16:06:54.000000000 +0200
-+++ /usr/local/lis/include/lis.h	2016-09-06 17:46:13.818395528 +0200
-@@ -336,7 +336,12 @@
+--- lis-1.6.6/include/lis.h.org	2016-09-10 21:35:29.334624333 +0200
++++ lis-1.6.6/include/lis.h	2016-09-10 21:37:30.550783992 +0200
+@@ -337,7 +337,12 @@
  #else
  typedef double LIS_REAL;
  #if defined(HAVE_COMPLEX_H)
