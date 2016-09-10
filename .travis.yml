@@ -1,15 +1,19 @@
 language: cpp
 sudo: required
 dist: trusty
+
 #env: PYTHON=2.7 CPP=11 GCC=4.8
-addons:
-  apt: 
-   sources: 
-      - ubuntu-toolchain-r-test
-   packages:
-      #- gcc-4.8 
-      #- g++-4.8
-      - cmake
+#addons:
+#  apt: 
+#   sources: 
+#      - ubuntu-toolchain-r-test
+#   packages:
+#      - gcc-4.8 
+#      - g++-4.8
+#      - cmake
+
+notifications:
+  email: true
   
 before_script:
     - uname -a
@@ -41,4 +45,5 @@ script:
     - python --version
     - python2.7 --version
     - python2.7  -c "import numpy"
+    - ls -alhR /usr/local
     
