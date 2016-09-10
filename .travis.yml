@@ -30,16 +30,13 @@ before_install:
     - ./install-lis.sh
 
 install: 
-    # Install gtest without sudo 
-    - export LIBRARY_PATH=$(pwd)
+    - export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/lis/lib
     - env | grep LD
     - pip install numpy scipy pytest
 
 script:
     - pwd
     - ls -alh
-    - df -h
-    - free
     - python --version
     - python2.7 --version
     - python2.7  -c "import numpy"
