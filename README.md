@@ -1,6 +1,8 @@
 LIS-Solver Python extension
 ==============================
 
+[![Build Status](https://travis-ci.org/Kalle0x12/Test2.svg?branch=master)](https://travis-ci.org/Kalle0x12/Test2)
+
 Pybind11 https://github.com/pybind/pybind11 is a lightweight header-only library
 that exposes C++ types in Python and vice versa, mainly to create Python bindings
 of existing C++ Code or as in this case of C Code. A great advantage of pybind11
