@@ -8,33 +8,33 @@ matrix:
       apt:
         sources: [ubuntu-toolchain-r-test, kubuntu-backports]
         packages: [g++-4.8, cmake]
-#  - os: linux
-#    env: PYTHON=3.5 CPPV=11 GCC=4.8
-#    addons:
-#      apt:
-#        sources: [ubuntu-toolchain-r-test, kubuntu-backports, deadsnakes]
-#        packages: [g++-4.8, cmake, python3.5-dev]
-#  - sudo: true
-#    services: docker
-#    env: PYTHON=2.7 CPPV=14 GCC=6
-#  - sudo: true
-#    services: docker
-#    env: PYTHON=3.5 CPPV=14 GCC=6
-#  - os: osx
-#    osx_image: xcode7.3
-#    env: PYTHON=2.7 CPPV=14 CLANG
-#  - os: osx
-#    osx_image: xcode7.3
-#    env: PYTHON=3.5 CPPV=14 CLANG
-#  # A barebones build makes sure everything still works without optional deps (numpy/scipy/eigen)
-#  # and also tests the automatic discovery functions in CMake (Python version, C++ standard).
-#  - os: linux
-#    env: BAREBONES
-#    addons:
-#      apt:
-#        sources: [ubuntu-toolchain-r-test, kubuntu-backports]
-#        packages: [g++-4.8, cmake]
-#    install: pip install pytest
+  - os: linux
+    env: PYTHON=3.5 CPPV=11 GCC=4.8
+    addons:
+      apt:
+        sources: [ubuntu-toolchain-r-test, kubuntu-backports, deadsnakes]
+        packages: [g++-4.8, cmake, python3.5-dev]
+  - sudo: true
+    services: docker
+    env: PYTHON=2.7 CPPV=14 GCC=6
+  - sudo: true
+    services: docker
+    env: PYTHON=3.5 CPPV=14 GCC=6
+  - os: osx
+    osx_image: xcode7.3
+    env: PYTHON=2.7 CPPV=14 CLANG
+  - os: osx
+    osx_image: xcode7.3
+    env: PYTHON=3.5 CPPV=14 CLANG
+  # A barebones build makes sure everything still works without optional deps (numpy/scipy/eigen)
+  # and also tests the automatic discovery functions in CMake (Python version, C++ standard).
+  - os: linux
+    env: BAREBONES
+    addons:
+      apt:
+        sources: [ubuntu-toolchain-r-test, kubuntu-backports]
+        packages: [g++-4.8, cmake]
+    install: pip install pytest
 # Documentation build:
     #  - os: linux
     #    language: docs
