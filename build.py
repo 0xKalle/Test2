@@ -35,11 +35,11 @@ ext_modules = [
               #get_pybind_include(),
               #get_pybind_include(user=True),
               home + '/pybind11/include',
-              '/usr/local/lis/include'
+              home + '/lis/include'
               ],
               extra_compile_args=["-fopenmp"],
               extra_link_args=["-fopenmp"],
-              library_dirs=['/usr/local/lis/lib'],
+              library_dirs=[home + '/lis/lib'],
               libraries=['lis'],
               language='c++'
               )
