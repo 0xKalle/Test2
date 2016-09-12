@@ -1,5 +1,4 @@
-# Import pybind11 generated wrapper for LIS-Solver routine which is implemented
-# in lis.cpp
+from __future__ import print_function
 import lis_wrapper
 import numpy as np
 import scipy.sparse
@@ -46,15 +45,15 @@ A[6, 6] = 11.0
 A[7, 7] = 5.0
 
 # print "Dense matrix:"
-print A
+print(A)
 # Dense matrix to sparse matrix in CSR format
 Acsr = scipy.sparse.csr_matrix(A)
 
-print "Sparse upper triangular CSR matrix:"
-print "values:  ", Acsr.data
+print("Sparse upper triangular CSR matrix:")
+print("values:  ", Acsr.data)
 # Indices are 0 based
-print "index:   ", Acsr.indices
-print "pointer: ", Acsr.indptr
+print("index:   ", Acsr.indices)
+print("pointer: ", Acsr.indptr)
 
 # LIS Manual: Appendix File Formats
 # "Note that both the upper and lower triangular entries need to be stored
@@ -63,12 +62,12 @@ print "pointer: ", Acsr.indptr
 # Convert the upper triangular CSR matrix Acsr to 'full' CSR matrix Acsr_full
 Acsr_full = Acsr + Acsr.T - scipy.sparse.diags(Acsr.diagonal())
 
-print
-print "Sparse 'full' CSR matrix:"
-print "values:  ", Acsr_full.data
+print()
+print("Sparse 'full' CSR matrix:")
+print("values:  ", Acsr_full.data)
 # Indices are 0 based
-print "index:   ", Acsr_full.indices
-print "pointer: ", Acsr_full.indptr
+print("index:   ", Acsr_full.indices)
+print("pointer: ", Acsr_full.indptr)
 
 # initial guess for solution x
 x = np.zeros(8)
@@ -100,7 +99,7 @@ assert (np.allclose(b, y))
 # check solution  with sparse matrix Acsr_full
 y = Acsr_full.dot(x)
 assert (np.allclose(b, y))
-print "Solution x: ", x
-print
-print "A * x:", y
-print "b    :", b
+print("Solution x: ", x)
+print()
+print("A * x:", y)
+print("b    :", b)

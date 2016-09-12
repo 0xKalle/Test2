@@ -1,3 +1,4 @@
+from __future__ import print_function
 from os.path import expanduser
 import setuptools
 from setuptools import Extension
