@@ -75,7 +75,6 @@ before_install:
       pip install --user --upgrade pip virtualenv
       virtualenv -p python$PYTHON venv
     elif [ "$TRAVIS_OS_NAME" = "osx" ]; then
-      brew update; brew install clang-omp;
       if [ "$PY" = "3" ]; then
         brew update; brew install python$PY;
       else
@@ -99,20 +98,26 @@ install:
   fi
   
 script:
-- $SCRIPT_RUN_PREFIX pwd   
-- $SCRIPT_RUN_PREFIX  ./install-lis.sh
-- $SCRIPT_RUN_PREFIX  echo $LD_LIBRARY_PATH
-- $SCRIPT_RUN_PREFIX pwd
-- $SCRIPT_RUN_PREFIX ls -alh
-- $SCRIPT_RUN_PREFIX git clone https://github.com/pybind/pybind11.git
-- $SCRIPT_RUN_PREFIX pwd
-- $SCRIPT_RUN_PREFIX ls -alh
-- $SCRIPT_RUN_PREFIX ./clean.sh
-- $SCRIPT_RUN_PREFIX python$PY --version
-- $SCRIPT_RUN_PREFIX python$PY build.py build_ext --inplace
-- $SCRIPT_RUN_PREFIX ls -alh
-- $SCRIPT_RUN_PREFIX ./run_test.sh python$PY
-- $SCRIPT_RUN_PREFIX cat residuals.log
+- |
+  $SCRIPT_RUN_PREFIX pwd   
+  $SCRIPT_RUN_PREFIX  ./install-lis.sh
+  $SCRIPT_RUN_PREFIX  echo $LD_LIBRARY_PATH
+  $SCRIPT_RUN_PREFIX pwd
+  $SCRIPT_RUN_PREFIX ls -alh
+  $SCRIPT_RUN_PREFIX git clone https://github.com/pybind/pybind11.git
+  $SCRIPT_RUN_PREFIX pwd
+  $SCRIPT_RUN_PREFIX ls -alh
+  $SCRIPT_RUN_PREFIX ./clean.sh
+  $SCRIPT_RUN_PREFIX python$PY --version
+  if [ "$TRAVIS_OS_NAME" = "linux" ]; then
+     $SCRIPT_RUN_PREFIX python$PY build.py build_ext --inplace
+  elif [ "$TRAVIS_OS_NAME" = "osx" ]; then
+     $SCRIPT_RUN_PREFIX python$PY build_mac.py build_ext --inplace
+  fi
+  $SCRIPT_RUN_PREFIX ls -alh
+  $SCRIPT_RUN_PREFIX ./run_test.sh python$PY
+  $SCRIPT_RUN_PREFIX cat residuals.log
+
 
 after_script:
 - if [ -n "$DOCKER" ]; then docker stop "$containerid"; docker rm "$containerid"; fi
