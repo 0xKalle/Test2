@@ -4,9 +4,9 @@ from setuptools import Extension
 from setuptools import setup
 from setuptools.command.build_ext import build_ext
 import sys
-#home = expanduser("~")
+home = expanduser("~")
 import os
-home = os.getcwd()
+pwd = os.getcwd()
 
 
 __version__ = '0.0.1'
@@ -34,7 +34,7 @@ ext_modules = [
               # Path to pybind11 headers
               #get_pybind_include(),
               #get_pybind_include(user=True),
-              home + '/pybind11/include',
+              pwd + '/pybind11/include',
               home + '/lis/include'
               ],
               extra_compile_args=["-fopenmp"],

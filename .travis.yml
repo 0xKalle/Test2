@@ -30,7 +30,7 @@ before_install:
     - ./install-lis.sh
 
 install: 
-    - export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$PWD/lis/lib
+    - export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$HOME/lis/lib
     - env | grep LD
     - pip install numpy scipy pytest
 
