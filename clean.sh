@@ -1,4 +1,5 @@
-rm -f *.so
+#!/bin/bash
+m -f *.so
 rm -f *.pyc
 rm -rf build
 rm -rf tmp

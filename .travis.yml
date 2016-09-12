@@ -92,7 +92,7 @@ install:
   if [ -n "$DOCKER" ]; then
     docker exec --tty "$containerid" sh -c "for s in 0 15; do sleep \$s; apt-get -qy --no-install-recommends install \
       python$PYTHON-dev python$PY-pytest python$PY-scipy python$PY-numpy \
-      libeigen3-dev cmake make g++ && break; done"
+      libeigen3-dev cmake make g++ git-all && break; done"
   else
     pip install numpy scipy pytest
   fi
