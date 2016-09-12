@@ -100,7 +100,7 @@ install:
 script:
 - $SCRIPT_RUN_PREFIX pwd   
 - $SCRIPT_RUN_PREFIX  ./install-lis.sh
-- $SCRIPT_RUN_PREFIX  export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$HOME/lis/lib
+- $SCRIPT_RUN_PREFIX  echo $LD_LIBRARY_PATH
 - $SCRIPT_RUN_PREFIX pwd
 - $SCRIPT_RUN_PREFIX ls -alh
 - $SCRIPT_RUN_PREFIX git clone https://github.com/pybind/pybind11.git
