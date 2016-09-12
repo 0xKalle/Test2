@@ -2,30 +2,30 @@ language: cpp
 sudo: false
 matrix:
   include:
-  - os: linux
-    env: PYTHON=2.7 CPPV=11 GCC=4.8
-    addons:
-      apt:
-        sources: [ubuntu-toolchain-r-test, kubuntu-backports]
-        packages: [g++-4.8, cmake]
-  - os: linux
-    env: PYTHON=3.5 CPPV=11 GCC=4.8
-    addons:
-      apt:
-        sources: [ubuntu-toolchain-r-test, kubuntu-backports, deadsnakes]
-        packages: [g++-4.8, cmake, python3.5-dev]
-  - sudo: true
-    services: docker
-    env: PYTHON=2.7 CPPV=14 GCC=6
-  - sudo: true
-    services: docker
-    env: PYTHON=3.5 CPPV=14 GCC=6
+#  - os: linux
+#    env: PYTHON=2.7 CPPV=11 GCC=4.8
+#    addons:
+#      apt:
+#        sources: [ubuntu-toolchain-r-test, kubuntu-backports]
+#        packages: [g++-4.8, cmake]
+#  - os: linux
+#    env: PYTHON=3.5 CPPV=11 GCC=4.8
+#    addons:
+#      apt:
+#        sources: [ubuntu-toolchain-r-test, kubuntu-backports, deadsnakes]
+#        packages: [g++-4.8, cmake, python3.5-dev]
+#  - sudo: true
+#    services: docker
+#    env: PYTHON=2.7 CPPV=14 GCC=6
+#  - sudo: true
+#    services: docker
+#    env: PYTHON=3.5 CPPV=14 GCC=6
   - os: osx
     osx_image: xcode7.3
     env: PYTHON=2.7 CPPV=14 CLANG
-  - os: osx
-    osx_image: xcode7.3
-    env: PYTHON=3.5 CPPV=14 CLANG
+#  - os: osx
+#    osx_image: xcode7.3
+#    env: PYTHON=3.5 CPPV=14 CLANG
   # A barebones build makes sure everything still works without optional deps (numpy/scipy/eigen)
   # and also tests the automatic discovery functions in CMake (Python version, C++ standard).
 #  - os: linux
@@ -75,6 +75,7 @@ before_install:
       pip install --user --upgrade pip virtualenv
       virtualenv -p python$PYTHON venv
     elif [ "$TRAVIS_OS_NAME" = "osx" ]; then
+      brew update; brew tap homebrew/boneyard; brew install clang-omp;
       if [ "$PY" = "3" ]; then
         brew update; brew install python$PY;
       else
@@ -117,7 +118,8 @@ script:
   $SCRIPT_RUN_PREFIX ls -alh
   $SCRIPT_RUN_PREFIX ./run_test.sh python$PY
   $SCRIPT_RUN_PREFIX cat residuals.log
-
+  $SCRIPT_RUN_PREFIX which clang-omp
+  $SCRIPT_RUN_PREFIX ls -lag /usr/local/Cellar
 
 after_script:
 - if [ -n "$DOCKER" ]; then docker stop "$containerid"; docker rm "$containerid"; fi
