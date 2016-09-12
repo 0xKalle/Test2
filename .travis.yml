@@ -110,7 +110,8 @@ script:
 - $SCRIPT_RUN_PREFIX python --version
 - $SCRIPT_RUN_PREFIX python$PY --version
 - $SCRIPT_RUN_PREFIX python$PY build.py build_ext --inplace
-- $SCRIPT_RUN_PREFIX python$PY csr_test.py
+- $SCRIPT_RUN_PREFIX ls -alh
+- $SCRIPT_RUN_PREFIX ./run_test.sh
 - $SCRIPT_RUN_PREFIX cat residuals.log
 
 after_script:
