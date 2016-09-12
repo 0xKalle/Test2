@@ -75,7 +75,7 @@ x = np.zeros(8)
 # right hand side
 b = np.ones(8)
 info = 1    # make LIS more verbose
-tol = 1e-6  # convergence tolerance
+tol = 1e-3  # convergence tolerance
 max_iter = 10000 # maximum number of iterations
 logfname = "residuals.log" # log
 
