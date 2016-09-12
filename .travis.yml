@@ -2,18 +2,18 @@ language: cpp
 sudo: false
 matrix:
   include:
-  - os: linux
-    env: PYTHON=2.7 CPPV=11 GCC=4.8
-    addons:
-      apt:
-        sources: [ubuntu-toolchain-r-test, kubuntu-backports]
-        packages: [g++-4.8, cmake]
-  - os: linux
-    env: PYTHON=3.5 CPPV=11 GCC=4.8
-    addons:
-      apt:
-        sources: [ubuntu-toolchain-r-test, kubuntu-backports, deadsnakes]
-        packages: [g++-4.8, cmake, python3.5-dev]
+#  - os: linux
+#    env: PYTHON=2.7 CPPV=11 GCC=4.8
+#    addons:
+#      apt:
+#        sources: [ubuntu-toolchain-r-test, kubuntu-backports]
+#        packages: [g++-4.8, cmake]
+#  - os: linux
+#    env: PYTHON=3.5 CPPV=11 GCC=4.8
+#    addons:
+#      apt:
+#        sources: [ubuntu-toolchain-r-test, kubuntu-backports, deadsnakes]
+#        packages: [g++-4.8, cmake, python3.5-dev]
   - sudo: true
     services: docker
     env: PYTHON=2.7 CPPV=14 GCC=6
@@ -91,7 +91,7 @@ install:
   # Install dependencies
   if [ -n "$DOCKER" ]; then
     docker exec --tty "$containerid" sh -c "for s in 0 15; do sleep \$s; apt-get -qy --no-install-recommends install \
-      python$PYTHON-dev python$PY-pytest python$PY-scipy python$PY-numpy \
+      python$PYTHON-dev python$PY-pytest python$PY-scipy python$PY-numpy python$PY-setuptools \
       libeigen3-dev cmake make g++ git-all && break; done"
   else
     pip install numpy scipy pytest
