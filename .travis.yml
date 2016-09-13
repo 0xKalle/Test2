@@ -109,8 +109,6 @@ script:
   $SCRIPT_RUN_PREFIX ls -alh
   $SCRIPT_RUN_PREFIX ./run_test.sh python$PY
   $SCRIPT_RUN_PREFIX cat residuals.log
-  $SCRIPT_RUN_PREFIX which clang-omp
-  $SCRIPT_RUN_PREFIX ls -lag /usr/local/Cellar
 
 after_script:
 - if [ -n "$DOCKER" ]; then docker stop "$containerid"; docker rm "$containerid"; fi
