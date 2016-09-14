@@ -8,24 +8,24 @@ matrix:
       apt:
         sources: [ubuntu-toolchain-r-test, kubuntu-backports]
         packages: [g++-4.8, cmake]
-  - os: linux
-    env: PYTHON=3.5 CPPV=11 GCC=4.8
-    addons:
-      apt:
-        sources: [ubuntu-toolchain-r-test, kubuntu-backports, deadsnakes]
-        packages: [g++-4.8, cmake, python3.5-dev]
-  - sudo: true
-    services: docker
-    env: PYTHON=2.7 CPPV=14 GCC=6
-  - sudo: true
-    services: docker
-    env: PYTHON=3.5 CPPV=14 GCC=6
+#  - os: linux
+#    env: PYTHON=3.5 CPPV=11 GCC=4.8
+#    addons:
+#      apt:
+#        sources: [ubuntu-toolchain-r-test, kubuntu-backports, deadsnakes]
+#        packages: [g++-4.8, cmake, python3.5-dev]
+#  - sudo: true
+#    services: docker
+#    env: PYTHON=2.7 CPPV=14 GCC=6
+#  - sudo: true
+#    services: docker
+#    env: PYTHON=3.5 CPPV=14 GCC=6
   - os: osx
     osx_image: xcode7.3
     env: PYTHON=2.7 CPPV=14 CLANG
-  - os: osx
-    osx_image: xcode7.3
-    env: PYTHON=3.5 CPPV=14 CLANG
+#  - os: osx
+#    osx_image: xcode7.3
+#    env: PYTHON=3.5 CPPV=14 CLANG
 # Documentation build:
     #  - os: linux
     #    language: docs
@@ -90,28 +90,27 @@ install:
   fi
   
 script:
-- |
-  $SCRIPT_RUN_PREFIX pwd   
-  $SCRIPT_RUN_PREFIX  ./install-lis.sh
-  $SCRIPT_RUN_PREFIX  echo $LD_LIBRARY_PATH
-  $SCRIPT_RUN_PREFIX pwd
-  $SCRIPT_RUN_PREFIX ls -alh
-  #$SCRIPT_RUN_PREFIX git clone https://github.com/pybind/pybind11.git
-  $SCRIPT_RUN_PREFIX echo $PYTHON
-  $SCRIPT_RUN_PREFIX echo $CPPV 
-  $SCRIPT_RUN_PREFIX ./install-pybind11.sh $PYTHON $CPPV 
-  $SCRIPT_RUN_PREFIX pwd
-  $SCRIPT_RUN_PREFIX ls -alh
-  $SCRIPT_RUN_PREFIX ./clean.sh
-  $SCRIPT_RUN_PREFIX python$PY --version
-  if [ "$TRAVIS_OS_NAME" = "linux" ]; then
-     $SCRIPT_RUN_PREFIX python$PY build.py build_ext --inplace
-  elif [ "$TRAVIS_OS_NAME" = "osx" ]; then
-     $SCRIPT_RUN_PREFIX python$PY build_mac.py build_ext --inplace
-  fi
-  $SCRIPT_RUN_PREFIX ls -alh
-  $SCRIPT_RUN_PREFIX ./run_test.sh python$PY
-  $SCRIPT_RUN_PREFIX cat residuals.log
+ - $SCRIPT_RUN_PREFIX pwd   
+ - $SCRIPT_RUN_PREFIX  ./install-lis.sh
+ - $SCRIPT_RUN_PREFIX  echo $LD_LIBRARY_PATH
+ - $SCRIPT_RUN_PREFIX pwd
+ - $SCRIPT_RUN_PREFIX ls -alh
+ - $SCRIPT_RUN_PREFIX echo $PYTHON
+ - $SCRIPT_RUN_PREFIX echo $CPPV 
+ - $SCRIPT_RUN_PREFIX ./install-pybind11.sh $PYTHON $CPPV 
+ - $SCRIPT_RUN_PREFIX pwd
+ - $SCRIPT_RUN_PREFIX ls -alh
+ - $SCRIPT_RUN_PREFIX ./clean.sh
+ - $SCRIPT_RUN_PREFIX python$PY --version
+ - |
+   if [ "$TRAVIS_OS_NAME" = "linux" ]; then
+       $SCRIPT_RUN_PREFIX python$PY build.py build_ext --inplace
+    elif [ "$TRAVIS_OS_NAME" = "osx" ]; then
+       $SCRIPT_RUN_PREFIX python$PY build_mac.py build_ext --inplace
+    fi
+ - $SCRIPT_RUN_PREFIX ls -alh
+ - $SCRIPT_RUN_PREFIX ./run_test.sh python$PY
+ - $SCRIPT_RUN_PREFIX cat residuals.log
 
 after_script:
 - if [ -n "$DOCKER" ]; then docker stop "$containerid"; docker rm "$containerid"; fi
