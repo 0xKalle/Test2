@@ -1,5 +1,5 @@
 #!/bin/bash
-set -ex
+set -ev
 git clone https://github.com/anishida/lis.git
 patch -p0 < lis.patch
 # make ckeck fails on osx
