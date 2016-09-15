@@ -93,6 +93,10 @@ script:
  - $SCRIPT_RUN_PREFIX pwd
  - $SCRIPT_RUN_PREFIX ls -lah /bin/sh
  - $SCRIPT_RUN_PREFIX ls -lah /bin/bash
+ - $SCRIPT_RUN_PREFIX bash --version
+ - $SCRIPT_RUN_PREFIX sh --version
+ - $SCRIPT_RUN_PREFIX make --version
+ - $SCRIPT_RUN_PREFIX gmake --version
  - $SCRIPT_RUN_PREFIX  ./install-lis.sh
  - $SCRIPT_RUN_PREFIX  echo $LD_LIBRARY_PATH
  - $SCRIPT_RUN_PREFIX pwd
