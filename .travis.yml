@@ -83,7 +83,7 @@ install:
 - |
   # Install dependencies
   if [ -n "$DOCKER" ]; then
-    export CMAKE_EXTRA_ARGS="${CMAKE_EXTRA_ARGS}"
+    #export CMAKE_EXTRA_ARGS="${CMAKE_EXTRA_ARGS}"
     docker exec --tty "$containerid" sh -c "for s in 0 15; do sleep \$s; apt-get -qy --no-install-recommends install \
       python$PYTHON-dev python$PY-pytest python$PY-scipy python$PY-numpy python$PY-setuptools \
       libeigen3-dev cmake make g++ git-all wget && break; done"
