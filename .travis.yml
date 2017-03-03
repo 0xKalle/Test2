@@ -54,7 +54,7 @@ before_install:
   # Initialize enviornment
   if [ -n "$DOCKER" ]; then
     docker pull $DOCKER
-    #export CMAKE_EXTRA_ARGS="-DPYBIND11_LTO_CXX_FLAGS="
+    export CMAKE_EXTRA_ARGS="-DPYBIND11_LTO_CXX_FLAGS="
     export containerid=$(docker run --detach --tty \
       --volume="$PWD":/pybind11 --workdir=/pybind11 \
       --env="CC=$CC" --env="CXX=$CXX" --env="DEBIAN_FRONTEND=$DEBIAN_FRONTEND" \
@@ -83,6 +83,7 @@ install:
 - |
   # Install dependencies
   if [ -n "$DOCKER" ]; then
+    export CMAKE_EXTRA_ARGS="${CMAKE_EXTRA_ARGS}"
     docker exec --tty "$containerid" sh -c "for s in 0 15; do sleep \$s; apt-get -qy --no-install-recommends install \
       python$PYTHON-dev python$PY-pytest python$PY-scipy python$PY-numpy python$PY-setuptools \
       libeigen3-dev cmake make g++ git-all wget && break; done"
@@ -98,7 +99,7 @@ script:
  - $SCRIPT_RUN_PREFIX ls -alh
  - $SCRIPT_RUN_PREFIX echo $PYTHON
  - $SCRIPT_RUN_PREFIX echo $CPPV 
- - $SCRIPT_RUN_PREFIX ./install-pybind11.sh $PYTHON $CPPV
+ - $SCRIPT_RUN_PREFIX ./install-pybind11.sh $PYTHON $CPPV ${CMAKE_EXTRA_ARGS}
  - $SCRIPT_RUN_PREFIX pwd
  - $SCRIPT_RUN_PREFIX ls -alh
  - $SCRIPT_RUN_PREFIX ./clean.sh
