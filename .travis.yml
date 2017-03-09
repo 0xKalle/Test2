@@ -6,14 +6,24 @@ matrix:
     env: PYTHON=2.7 CPPV=11 GCC=4.8
     addons:
       apt:
-        sources: [ubuntu-toolchain-r-test, kubuntu-backports]
-        packages: [g++-4.8, cmake]
+        sources:
+        - ubuntu-toolchain-r-test
+        - kubuntu-backports
+        packages:
+        - g++-4.8
+        - cmake
   - os: linux
     env: PYTHON=3.5 CPPV=11 GCC=4.8
     addons:
       apt:
-        sources: [ubuntu-toolchain-r-test, kubuntu-backports, deadsnakes]
-        packages: [g++-4.8, cmake, python3.5-dev]
+        sources:
+        - ubuntu-toolchain-r-test
+        - kubuntu-backports
+        - deadsnakes
+        packages:
+        - g++-4.8
+        - cmake
+        - python3.5-dev
   - sudo: true
     services: docker
     env: PYTHON=2.7 CPPV=14 GCC=6
@@ -26,18 +36,10 @@ matrix:
   - os: osx
     osx_image: xcode7.3
     env: PYTHON=3.5 CPPV=14 CLANG
-# Documentation build:
-    #  - os: linux
-    #    language: docs
-    #    env: DOCS STYLE
-    #    install: pip install sphinx sphinx_rtd_theme
-    #    script:
-    #    - make -C docs html SPHINX_OPTIONS=-W
-    #    - tools/check-style.sh
 cache:
   directories:
-  - $HOME/.cache/pip
-  - $HOME/Library/Caches/pip
+  - "$HOME/.cache/pip"
+  - "$HOME/Library/Caches/pip"
 before_install:
 - |
   # Configure build variables
@@ -90,36 +92,32 @@ install:
   else
     pip install numpy scipy pytest
   fi
-  
 script:
- - $SCRIPT_RUN_PREFIX pwd
- - $SCRIPT_RUN_PREFIX  ./install-lis.sh
- - $SCRIPT_RUN_PREFIX  echo $LD_LIBRARY_PATH
- - $SCRIPT_RUN_PREFIX pwd
- - $SCRIPT_RUN_PREFIX ls -alh
- - $SCRIPT_RUN_PREFIX echo $PYTHON
- - $SCRIPT_RUN_PREFIX echo $CPPV 
- - $SCRIPT_RUN_PREFIX ./install-pybind11.sh $PYTHON $CPPV ${CMAKE_EXTRA_ARGS}
- - $SCRIPT_RUN_PREFIX pwd
- - $SCRIPT_RUN_PREFIX ls -alh
- - $SCRIPT_RUN_PREFIX ./clean.sh
- - $SCRIPT_RUN_PREFIX python$PY --version
- - |
-   if [ "$TRAVIS_OS_NAME" = "linux" ]; then
-       $SCRIPT_RUN_PREFIX python$PY build.py build_ext --inplace
-    elif [ "$TRAVIS_OS_NAME" = "osx" ]; then
-       $SCRIPT_RUN_PREFIX python$PY build_mac.py build_ext --inplace
-    fi
- - $SCRIPT_RUN_PREFIX ls -alh
- - $SCRIPT_RUN_PREFIX ./run_test.sh python$PY
- - $SCRIPT_RUN_PREFIX cat residuals.log
-
+- "$SCRIPT_RUN_PREFIX pwd"
+- "$SCRIPT_RUN_PREFIX  ./install-lis.sh"
+- "$SCRIPT_RUN_PREFIX  echo $LD_LIBRARY_PATH"
+- "$SCRIPT_RUN_PREFIX pwd"
+- "$SCRIPT_RUN_PREFIX ls -alh"
+- "$SCRIPT_RUN_PREFIX echo $PYTHON"
+- "$SCRIPT_RUN_PREFIX echo $CPPV"
+- "$SCRIPT_RUN_PREFIX ./install-pybind11.sh $PYTHON $CPPV ${CMAKE_EXTRA_ARGS}"
+- "$SCRIPT_RUN_PREFIX pwd"
+- "$SCRIPT_RUN_PREFIX ls -alh"
+- "$SCRIPT_RUN_PREFIX ./clean.sh"
+- "$SCRIPT_RUN_PREFIX python$PY --version"
+- |
+  if [ "$TRAVIS_OS_NAME" = "linux" ]; then
+      $SCRIPT_RUN_PREFIX python$PY build.py build_ext --inplace
+   elif [ "$TRAVIS_OS_NAME" = "osx" ]; then
+      $SCRIPT_RUN_PREFIX python$PY build_mac.py build_ext --inplace
+   fi
+- "$SCRIPT_RUN_PREFIX ls -alh"
+- "$SCRIPT_RUN_PREFIX ./run_test.sh python$PY"
+- "$SCRIPT_RUN_PREFIX cat residuals.log"
 after_script:
-- if [ -n "$DOCKER" ]; then docker stop "$containerid"; docker rm "$containerid"; fi
-
+- if [ -n "$DOCKER" ]; then docker stop "$containerid"; docker rm "$containerid";
+  fi
 notifications:
   email:
     recipients:
-      secure: "ZKSg3sJ7gOsicib6WLogxhbdhOwvll9X0GW6i75AnQGCUGryVHTIV1ixJFSsOh5mzlM9gzCWJU5K+uKS+++1sSlUFsfX7tmD2110/SNCXkgsEurVcRYsFxW3eUoIGvLdoo0zPtKaJrFVQ166m1zq527ZALGxIbDqbwxgmDzo5XNljsbF6KAMV0YlX3G8yykH37JC6kWKV9SxdycVYI7ACJUS0Il/3JNaaMiWZROB/5CbkOm9MDjRDkt7HUGgXpNrMuLrr3adk3a6Q8RnD0DjbTyGlmnfZQ1MH8OWaTI1TUm8J7ng9FIopeolEpbWrq3mEVu28nx6yRNotDzG/yEttTg46tX3HIozPh1wJOXQ8jrgKF8GlCTGcXZ3LqgAQxg6zGQXOAbKm7jmXvNdJFq5XuxOR8BrX9QvstbOqXiUO84WVZOqdqlipXyLDNO9TR19K1lMlEZprEl1jJEakJgNWpoaCdsVvWSA/BRW5Re3fyULBJMKGcxea7LvrXeuMRdvgugXEN/06hgEQaGz6kM645nZiXHaJM5RdnWMiQZAw2XHmmvFvH+XIfnIjYJT6zhl9XHvW0/85Ciwz/zyqPg30upVGjmEcJuL9yeoBhVu4LnNrJy6GP7SN5G+NMKZfiLvzQ3vXlK/ib7aC/cU4YbEX30u09DB6ZpIjzT8TjkQFWc="
-    on_success: always # default: change
-    on_failure: always # default: always  
+      secure: da70mnM8HmZa3K78IhS4QyEdoxZkgKjqkTnKB30Qbz0qsWg9rdayUTAnk8zi5R+ik9V3NAWSdzyhsMRSB9/j9+YQFNmoa8C95tBWgTOuc2t1XHQgWyMu/32CC4wypdXe3z8pdrncG9G04GZ6Dr9zt8+Jz9LBHA693oLAO+SUgamFk0vV60kxTX6KE+HNOIEfVY6NDas2EGx1KWXxb63l83iNDr/2ax3m4mnOtm48zml5W4qsDlQiJpd0Kq4OEuMdEmro0c4dO/0BcroPqycz/Ek0WXOih03FKR3P+ed72YpmwzivO+OQm5bvay8oq9lsRn9J3/UjdePdoBdN0e62U0cshfe4Cb5IDEZHrJv03uoTQFw+NtA9KKCa7omJ3x+S3c6STYRsgBFP53HaV9ECrUbONYkOTZHBj6xzpZdVqXluTdeRxly/5lMTdYnpUW7jfNlAce6nR2RycjeGr4/Jz2EF9ZxyN4jS9VrcUyJyyOFKJm+S8mcR/nuyp9YtEK0gaS4Sjp4r4PDyS3u8TZnjeHrmpYDDek671cig9t6VoM+oSRdfYac8M2e23flYz3qGflWaosYBZ6IYhmCq4ZsXsBdvZQpa3WgbXPlPsZ1T/PHnIfDoXxOYhfKv+5nzGBL266IWdqnG15E33Pi6Bcg7I1ZIg6bEPgX8ChYlSmyNXQo=
