@@ -36,7 +36,7 @@ before_install:
   if [ "$TRAVIS_OS_NAME" = "linux" ]; then
     if [ -z "$GCC" ]; then export GCC=4.8; fi
     export CXX=g++-$GCC CC=gcc-$GCC;
-    if [ "$GCC" = "6" ]; then export DOCKER=debian:testing CXX=g++ CC=gcc; fi
+    if [ "$GCC" = "6" ]; then export DOCKER=debian:stretch CXX=g++ CC=gcc; fi
   elif [ "$TRAVIS_OS_NAME" = "osx" ]; then
     export CXX=clang++ CC=clang;
   fi
