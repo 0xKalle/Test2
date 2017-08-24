@@ -144,8 +144,8 @@ void wrapper(py::array_t<double> values, py::array_t<int> columns,
     printf("LIS terminated...\n");
 }
 
-PYBIND11_PLUGIN(lis_wrapper) {
-    pybind11::module m("lis_wrapper", "Test LIS interface");
+PYBIND11_MODULE(lis_wrapper, m) {
+    m.doc() = "Test LIS interface";
     m.def("lis", &wrapper, "Call LIS wrapper");
-    return m.ptr();
 }
+
