@@ -61,7 +61,7 @@ before_install:
     elif [ "$TRAVIS_OS_NAME" = "osx" ]; then
       #brew update; brew tap homebrew/boneyard; brew install clang-omp;
       if [ "$PY" = "3" ]; then
-        brew upgrade; brew install python$PY;
+        brew update && brew upgrade python;
       else
         curl -fsSL -O https://bootstrap.pypa.io/get-pip.py
         sudo -H python get-pip.py
