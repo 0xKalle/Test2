@@ -77,7 +77,6 @@ install:
   \ tar xzf eigen.tar.gz\n  export CMAKE_EXTRA_ARGS=\"${CMAKE_EXTRA_ARGS} -DCMAKE_INCLUDE_PATH=$PWD/eigen-eigen-26667be4f70b\"
   \   \nfi\n"
 
-
 script:
 - "$SCRIPT_RUN_PREFIX pwd"
 - "$SCRIPT_RUN_PREFIX  ./install-lis.sh"
