@@ -13,6 +13,8 @@ matrix:
     env: STYLE DOCS PIP
     cache: false
     before_install:
+    - git clone --depth=50 https://github.com/pybind/pybind11.git pybind/pybind11
+    - git submodule update --init --recursive
     - pyenv global $(pyenv whence 2to3)  # activate all python versions
     - PY_CMD=python3
     - $PY_CMD -m pip install --user --upgrade pip wheel
