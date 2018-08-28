@@ -46,7 +46,8 @@ before_install:
   # Initialize environment
   if [ -n "$DOCKER" ]; then
     docker pull $DOCKER
-    export CMAKE_EXTRA_ARGS="-DPYBIND11_LTO_CXX_FLAGS="
+    # Disable LTO with gcc until gcc 79296 is fixed:
+    export CMAKE_EXTRA_ARGS="${CMAKE_EXTRA_ARGS} -DPYBIND11_LTO_CXX_FLAGS="
     export containerid=$(docker run --detach --tty \
       --volume="$PWD":/pybind11 --workdir=/pybind11 \
       --env="CC=$CC" --env="CXX=$CXX" --env="DEBIAN_FRONTEND=$DEBIAN_FRONTEND" \
@@ -72,16 +73,13 @@ before_install:
     source venv/bin/activate
   fi
 install:
-- |
-  # Install dependencies
-  if [ -n "$DOCKER" ]; then
-    #export CMAKE_EXTRA_ARGS="${CMAKE_EXTRA_ARGS}"
-    docker exec --tty "$containerid" sh -c "for s in 0 15; do sleep \$s; apt-get -qy --no-install-recommends install \
-      python$PYTHON-dev python$PY-pytest python$PY-scipy python$PY-numpy python$PY-setuptools \
-      libeigen3-dev cmake make g++ git-all wget patch && break; done"
-  else
-    pip install numpy scipy pytest
-  fi
+- "# Install dependencies\nif [ -n \"$DOCKER\" ]; then\n  docker exec --tty \"$containerid\"
+  sh -c \"for s in 0 15; do sleep \\$s; apt-get -qy --no-install-recommends install
+  \\\n    python$PYTHON-dev python$PY-pytest python$PY-scipy python$PY-numpy python$PY-setuptools
+  \\\n    libeigen3-dev cmake make g++ git-all wget patch && break; done\"\nelse\n  pip
+  install numpy scipy pytest\n  \n  wget -q -O eigen.tar.gz https://bitbucket.org/eigen/eigen/get/3.3.0.tar.gz\n
+  \ tar xzf eigen.tar.gz\n  export CMAKE_EXTRA_ARGS=\"${CMAKE_EXTRA_ARGS} -DCMAKE_INCLUDE_PATH=$PWD/eigen-eigen-26667be4f70b\"
+  \   \nfi\n"
 script:
 - "$SCRIPT_RUN_PREFIX pwd"
 - "$SCRIPT_RUN_PREFIX  ./install-lis.sh"
