@@ -15,7 +15,9 @@ matrix:
     before_install:
     - cd ~
     - git clone --depth=50 https://github.com/pybind/pybind11.git pybind/pybind11
+    - cd pybind/pybind11
     - git submodule update --init --recursive
+    - cd ~
     - pyenv global $(pyenv whence 2to3)  # activate all python versions
     - PY_CMD=python3
     - $PY_CMD -m pip install --user --upgrade pip wheel
