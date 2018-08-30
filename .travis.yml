@@ -130,7 +130,7 @@ before_install:
     if [ "$PY" = 3 ] || [ -n "$PYPY" ]; then
       $PY_CMD -m ensurepip --user
     fi
-    $PY_CMD -m pip install --user --upgrade pip wheel
+    $PY_CMD -m pip install --user --upgrade pip wheel setuptools
   fi
   set +e
 install:
@@ -144,7 +144,7 @@ install:
     fi
     $SCRIPT_RUN_PREFIX sh -c "for s in 0 15; do sleep \$s; \
       apt-get -qy --no-install-recommends install \
-        $PY_DEBUG python$PYTHON-dev python$PY-pytest python$PY-scipy wget git-all patch \
+        $PY_DEBUG python$PYTHON-dev python$PY-pytest python$PY-scipy python$PY-setuptools wget git-all patch \
         libeigen3-dev libboost-dev cmake make ${EXTRA_PACKAGES} && break; done"
   else
     if [ "$CLANG" = "5.0" ]; then
@@ -170,7 +170,7 @@ install:
     fi
     export NPY_NUM_BUILD_JOBS=2
     echo "Installing pytest, numpy, scipy..."
-    ${PYPY:+travis_wait 30} $PY_CMD -m pip install --user --upgrade pytest numpy scipy \
+    ${PYPY:+travis_wait 30} $PY_CMD -m pip install --user --upgrade setuptools pytest numpy scipy \
         ${PYPY:+--extra-index-url https://imaginary.ca/trusty-pypi}
     echo "done."
     mkdir eigen
