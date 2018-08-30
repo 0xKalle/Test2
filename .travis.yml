@@ -185,7 +185,8 @@ script:
 - "$SCRIPT_RUN_PREFIX  echo $LD_LIBRARY_PATH"
 - "$SCRIPT_RUN_PREFIX pwd"
 - "$SCRIPT_RUN_PREFIX ls -alh"
-- "$SCRIPT_RUN_PREFIX echo python$PYTHON"
+- "$SCRIPT_RUN_PREFIX echo $PYTHON"
+- "$SCRIPT_RUN_PREFIX echo $PY_CMD"
 - "$SCRIPT_RUN_PREFIX echo $CPPV"
 #- "$SCRIPT_RUN_PREFIX ./install-pybind11.sh $PYTHON $CPPV ${CMAKE_EXTRA_ARGS}  ${CMAKE_INCLUDE_PATH}"
 - |
@@ -200,14 +201,16 @@ script:
 - "$SCRIPT_RUN_PREFIX ls -alh"
 - "$SCRIPT_RUN_PREFIX ./clean.sh"
 - "$SCRIPT_RUN_PREFIX python$PYTHON --version"
+- "$SCRIPT_RUN_PREFIX $PY_CMD --version"
+
 - |
   if [ "$TRAVIS_OS_NAME" = "linux" ]; then
-      $SCRIPT_RUN_PREFIX python$PYTHON build.py build_ext --inplace
+      $SCRIPT_RUN_PREFIX $PY_CMD build.py build_ext --inplace
    elif [ "$TRAVIS_OS_NAME" = "osx" ]; then
-      $SCRIPT_RUN_PREFIX python$PYTHON build_mac.py build_ext --inplace
+      $SCRIPT_RUN_PREFIX $PY_CMD build_mac.py build_ext --inplace
    fi
 - "$SCRIPT_RUN_PREFIX ls -alh"
-- "$SCRIPT_RUN_PREFIX ./run_test.sh python$PYTHON"
+- "$SCRIPT_RUN_PREFIX ./run_test.sh $PY_CMD"
 - "$SCRIPT_RUN_PREFIX cat residuals.log"
 after_script:
 - if [ -n "$DOCKER" ]; then docker stop "$containerid"; docker rm "$containerid";
