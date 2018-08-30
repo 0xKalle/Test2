@@ -29,6 +29,7 @@ matrix:
 before_install:
 - pyenv global $(pyenv whence 2to3)  # activate all python versions
 - PY_CMD=python3
+- |
   # Configure build variables
   if [ "$TRAVIS_OS_NAME" = "linux" ]; then
     if [ -z "$GCC" ]; then export GCC=4.8; fi
