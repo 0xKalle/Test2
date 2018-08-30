@@ -198,12 +198,13 @@ script:
 
   cmake  -DPYBIND11_PYTHON_VERSION=$PYTHON -DPYBIND11_CPP_STANDARD=$CPPV $CMAKE_EXTRA_ARGS -DPYBIND11_WERROR=OFF
   make -j2 pytest
-  cd ..
+
+- "$SCRIPT_RUN_PREFIX cd ~"
 - "$SCRIPT_RUN_PREFIX pwd"
 - "$SCRIPT_RUN_PREFIX ls -alh"
 - "$SCRIPT_RUN_PREFIX ./clean.sh"
-- "$SCRIPT_RUN_PREFIX python$PYTHON --version"
-- "$SCRIPT_RUN_PREFIX $PY_CMD --version"
+- "$SCRIPT_RUN_PREFIX echo python$PYTHON"
+- "$SCRIPT_RUN_PREFIX echo $PY_CMD"
 - "$SCRIPT_RUN_PREFIX which $PY_CMD"
 
 - |
@@ -213,6 +214,7 @@ script:
       $SCRIPT_RUN_PREFIX $PY_CMD build_mac.py build_ext --inplace
    fi
 - "$SCRIPT_RUN_PREFIX ls -alh"
+- "$SCRIPT_RUN_PREFIX pwd"
 - "$SCRIPT_RUN_PREFIX ./run_test.sh $PY_CMD"
 - "$SCRIPT_RUN_PREFIX cat residuals.log"
 after_script:
