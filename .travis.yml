@@ -189,6 +189,7 @@ script:
 - "$SCRIPT_RUN_PREFIX echo $PY_CMD"
 - "$SCRIPT_RUN_PREFIX echo $CPPV"
 - "$SCRIPT_RUN_PREFIX echo $CMAKE_EXTRA_ARGS"
+- "$SCRIPT_RUN_PREFIX echo $CMAKE_INCLUDE_PATH"
 #- "$SCRIPT_RUN_PREFIX ./install-pybind11.sh $PYTHON $CPPV ${CMAKE_EXTRA_ARGS}  ${CMAKE_INCLUDE_PATH}"
 - |
   wget https://github.com/pybind/pybind11/archive/v2.2.3.tar.gz
@@ -198,8 +199,8 @@ script:
 
   cmake  -DPYBIND11_PYTHON_VERSION=$PYTHON -DPYBIND11_CPP_STANDARD=$CPPV $CMAKE_EXTRA_ARGS -DPYBIND11_WERROR=OFF
   make -j2 pytest
+  cd ..
 
-- "$SCRIPT_RUN_PREFIX cd .."
 - "$SCRIPT_RUN_PREFIX pwd"
 - "$SCRIPT_RUN_PREFIX ls -alh"
 - "$SCRIPT_RUN_PREFIX ./clean.sh"
