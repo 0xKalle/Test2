@@ -188,13 +188,15 @@ script:
 - "$SCRIPT_RUN_PREFIX echo $PYTHON"
 - "$SCRIPT_RUN_PREFIX echo $PY_CMD"
 - "$SCRIPT_RUN_PREFIX echo $CPPV"
+- "$SCRIPT_RUN_PREFIX echo $CMAKE_EXTRA_ARGS"
 #- "$SCRIPT_RUN_PREFIX ./install-pybind11.sh $PYTHON $CPPV ${CMAKE_EXTRA_ARGS}  ${CMAKE_INCLUDE_PATH}"
 - |
   wget https://github.com/pybind/pybind11/archive/v2.2.3.tar.gz
   mkdir pybind11
   tar xf v2.2.3.tar.gz -C pybind11 --strip 1
   cd pybind11
-  cmake  -DPYBIND11_PYTHON_VERSION=$PYTHON -DPYBIND11_CPP_STANDARD=$CPPV -DPYBIND11_WERROR=OFF -DDOWNLOAD_CATCH=ON
+
+  cmake  -DPYBIND11_PYTHON_VERSION=$PYTHON -DPYBIND11_CPP_STANDARD=$CPPV $CMAKE_EXTRA_ARGS -DPYBIND11_WERROR=OFF
   make -j2 pytest
   cd ..
 - "$SCRIPT_RUN_PREFIX pwd"
@@ -202,6 +204,7 @@ script:
 - "$SCRIPT_RUN_PREFIX ./clean.sh"
 - "$SCRIPT_RUN_PREFIX python$PYTHON --version"
 - "$SCRIPT_RUN_PREFIX $PY_CMD --version"
+- "$SCRIPT_RUN_PREFIX which $PY_CMD"
 
 - |
   if [ "$TRAVIS_OS_NAME" = "linux" ]; then
