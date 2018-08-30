@@ -195,17 +195,12 @@ script:
   mkdir pybind11
   tar xf v2.2.3.tar.gz -C pybind11 --strip 1
   cd pybind11
+  cmake ${CMAKE_EXTRA_ARGS} -DPYBIND11_PYTHON_VERSION=$PYTHON -DPYBIND11_CPP_STANDARD=$CPPV -DPYBIND11_WERROR=${WERROR:-ON} -DDOWNLOAD_CATCH=${DOWNLOAD_CATCH:-ON}
+  make pytest -j 2 PYTEST_ADDOPTS="-k 'not test_eigen'"
+  make cpptest -j 2
+  if [ -n "$CMAKE" ]; then make test_cmake_build; fi
+  cd ..
 
-- $SCRIPT_RUN_PREFIX cmake ${CMAKE_EXTRA_ARGS}
-    -DPYBIND11_PYTHON_VERSION=$PYTHON
-    -DPYBIND11_CPP_STANDARD=$CPPV
-    -DPYBIND11_WERROR=${WERROR:-ON}
-    -DDOWNLOAD_CATCH=${DOWNLOAD_CATCH:-ON}
-- $SCRIPT_RUN_PREFIX make pytest -j 2
-- $SCRIPT_RUN_PREFIX make cpptest -j 2
-- if [ -n "$CMAKE" ]; then $SCRIPT_RUN_PREFIX make test_cmake_build; fi
-- "$SCRIPT_RUN_PREFIX pwd"
-- "$SCRIPT_RUN_PREFIX cd .."
 - "$SCRIPT_RUN_PREFIX pwd"
 - "$SCRIPT_RUN_PREFIX ls -alh"
 - "$SCRIPT_RUN_PREFIX ./clean.sh"
