@@ -180,16 +180,6 @@ install:
   fi
   set +e
 script:
-- "$SCRIPT_RUN_PREFIX pwd"
-- "$SCRIPT_RUN_PREFIX  ./install-lis.sh"
-- "$SCRIPT_RUN_PREFIX  echo $LD_LIBRARY_PATH"
-- "$SCRIPT_RUN_PREFIX pwd"
-- "$SCRIPT_RUN_PREFIX ls -alh"
-- "$SCRIPT_RUN_PREFIX echo $PYTHON"
-- "$SCRIPT_RUN_PREFIX echo $PY_CMD"
-- "$SCRIPT_RUN_PREFIX echo $CPPV"
-- "$SCRIPT_RUN_PREFIX echo $CMAKE_EXTRA_ARGS"
-- "$SCRIPT_RUN_PREFIX echo $CMAKE_INCLUDE_PATH"
 - |
   wget https://github.com/pybind/pybind11/archive/v2.2.3.tar.gz
   mkdir pybind11
@@ -200,7 +190,16 @@ script:
   make cpptest -j 2
   if [ -n "$CMAKE" ]; then make test_cmake_build; fi
   cd ..
-
+- "$SCRIPT_RUN_PREFIX pwd"
+- "$SCRIPT_RUN_PREFIX  ./install-lis.sh"
+- "$SCRIPT_RUN_PREFIX  echo $LD_LIBRARY_PATH"
+- "$SCRIPT_RUN_PREFIX pwd"
+- "$SCRIPT_RUN_PREFIX ls -alh"
+- "$SCRIPT_RUN_PREFIX echo $PYTHON"
+- "$SCRIPT_RUN_PREFIX echo $PY_CMD"
+- "$SCRIPT_RUN_PREFIX echo $CPPV"
+- "$SCRIPT_RUN_PREFIX echo $CMAKE_EXTRA_ARGS"
+- "$SCRIPT_RUN_PREFIX echo $CMAKE_INCLUDE_PATH"
 - "$SCRIPT_RUN_PREFIX pwd"
 - "$SCRIPT_RUN_PREFIX ls -alh"
 - "$SCRIPT_RUN_PREFIX ./clean.sh"
