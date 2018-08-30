@@ -73,6 +73,7 @@ before_install:
   fi
 install:
 - |
+  $PY_CMD -m pip install --user --upgrade sphinx sphinx_rtd_theme breathe flake8 pep8-naming pytest
   # Install dependencies
   set -e
   if [ -n "$DOCKER" ]; then
@@ -119,10 +120,6 @@ install:
   set +e
 
 script:
-- |
-  # Make sure setup.py distributes and installs all the headers
-  $PY_CMD setup.py sdist
-  $PY_CMD -m pip install --user -U ./dist/*
 - "$SCRIPT_RUN_PREFIX pwd"
 - "$SCRIPT_RUN_PREFIX  ./install-lis.sh"
 - "$SCRIPT_RUN_PREFIX  echo $LD_LIBRARY_PATH"
