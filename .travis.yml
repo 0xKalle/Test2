@@ -139,7 +139,7 @@ script:
       $SCRIPT_RUN_PREFIX python$PYTHON build_mac.py build_ext --inplace
    fi
 - "$SCRIPT_RUN_PREFIX ls -alh"
-- "$SCRIPT_RUN_PREFIX ./run_test.sh $PY_CMD"
+- "$SCRIPT_RUN_PREFIX ./run_test.sh python$PYTHON"
 - "$SCRIPT_RUN_PREFIX cat residuals.log"
 after_script:
 - if [ -n "$DOCKER" ]; then docker stop "$containerid"; docker rm "$containerid";
